@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Download, Mail, ChevronDown, Sparkles, ArrowRight } from 'lucide-react'
-import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon } from '../ui/SocialIcons'
+import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon, InstagramIcon } from '../ui/SocialIcons'
 import { personalInfo } from '../../data/portfolio'
 import eyuelPhoto from '../../assets/eyuel.png'
 
@@ -31,10 +31,11 @@ function TypingEffect({ words }) {
 }
 
 const socials = [
-  { Icon: GithubIcon,   href: personalInfo.social.github,   label: 'GitHub' },
-  { Icon: LinkedinIcon, href: personalInfo.social.linkedin, label: 'LinkedIn' },
-  { Icon: TelegramIcon, href: personalInfo.social.telegram, label: 'Telegram' },
-  { Icon: FacebookIcon, href: personalInfo.social.facebook, label: 'Facebook' },
+  { Icon: GithubIcon,    href: personalInfo.social.github,    label: 'GitHub' },
+  { Icon: LinkedinIcon,  href: personalInfo.social.linkedin,  label: 'LinkedIn' },
+  { Icon: TelegramIcon,  href: personalInfo.social.telegram,  label: 'Telegram' },
+  { Icon: FacebookIcon,  href: personalInfo.social.facebook,  label: 'Facebook' },
+  { Icon: InstagramIcon, href: personalInfo.social.instagram, label: 'Instagram' },
 ]
 
 export default function Hero() {

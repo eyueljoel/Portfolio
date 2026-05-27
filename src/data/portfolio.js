@@ -11,6 +11,7 @@ export const personalInfo = {
     github: 'https://github.com/eyueljoel',
     linkedin: 'https://www.linkedin.com/in/eyuel-cherenet-82b000412',
     telegram: 'https://t.me/YOELyehu',
+    instagram: 'https://instagram.com/joel_chosen',
     facebook: 'https://facebook.com/eyuelcherenet',
   },
   cvUrl: '/Eyuel_Cherenet_CV.pdf',

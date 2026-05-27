@@ -1,5 +1,5 @@
 import { Code2, Heart, ArrowUp } from 'lucide-react'
-import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon } from '../ui/SocialIcons'
+import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon, InstagramIcon } from '../ui/SocialIcons'
 import { personalInfo } from '../../data/portfolio'
 
 const quickLinks = [
@@ -8,10 +8,11 @@ const quickLinks = [
   { href:'#experience',label:'Experience' },{ href:'#contact',label:'Contact' },
 ]
 const socials = [
-  { Icon:GithubIcon, href:personalInfo.social.github, label:'GitHub', hover:'hover:text-white' },
-  { Icon:LinkedinIcon, href:personalInfo.social.linkedin, label:'LinkedIn', hover:'hover:text-blue-400' },
-  { Icon:TelegramIcon, href:personalInfo.social.telegram, label:'Telegram', hover:'hover:text-sky-400' },
-  { Icon:FacebookIcon, href:personalInfo.social.facebook, label:'Facebook', hover:'hover:text-blue-500' },
+  { Icon:GithubIcon,    href:personalInfo.social.github,    label:'GitHub',    hover:'hover:text-white' },
+  { Icon:LinkedinIcon,  href:personalInfo.social.linkedin,  label:'LinkedIn',  hover:'hover:text-blue-400' },
+  { Icon:TelegramIcon,  href:personalInfo.social.telegram,  label:'Telegram',  hover:'hover:text-sky-400' },
+  { Icon:FacebookIcon,  href:personalInfo.social.facebook,  label:'Facebook',  hover:'hover:text-blue-500' },
+  { Icon:InstagramIcon, href:personalInfo.social.instagram, label:'Instagram', hover:'hover:text-pink-400' },
 ]
 
 export default function Footer() {

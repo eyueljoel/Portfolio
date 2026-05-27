@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, Loader } from 'lucide-react'
 import { useInView } from 'react-intersection-observer'
 import emailjs from '@emailjs/browser'
-import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon } from '../ui/SocialIcons'
+import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon, InstagramIcon } from '../ui/SocialIcons'
 import { personalInfo } from '../../data/portfolio'
 
 // ─── EmailJS config ───────────────────────────────────────────────────────────
@@ -17,10 +17,11 @@ const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || 'YOUR_PU
 const CONFIGURED = !EMAILJS_SERVICE_ID.startsWith('YOUR')
 
 const socials = [
-  { Icon: GithubIcon,   href: personalInfo.social.github,   label: 'GitHub',   color: 'hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900' },
-  { Icon: LinkedinIcon, href: personalInfo.social.linkedin, label: 'LinkedIn', color: 'hover:bg-blue-600 hover:text-white' },
-  { Icon: TelegramIcon, href: personalInfo.social.telegram, label: 'Telegram', color: 'hover:bg-sky-500 hover:text-white' },
-  { Icon: FacebookIcon, href: personalInfo.social.facebook, label: 'Facebook', color: 'hover:bg-blue-700 hover:text-white' },
+  { Icon: GithubIcon,    href: personalInfo.social.github,    label: 'GitHub',    color: 'hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900' },
+  { Icon: LinkedinIcon,  href: personalInfo.social.linkedin,  label: 'LinkedIn',  color: 'hover:bg-blue-600 hover:text-white' },
+  { Icon: TelegramIcon,  href: personalInfo.social.telegram,  label: 'Telegram',  color: 'hover:bg-sky-500 hover:text-white' },
+  { Icon: FacebookIcon,  href: personalInfo.social.facebook,  label: 'Facebook',  color: 'hover:bg-blue-700 hover:text-white' },
+  { Icon: InstagramIcon, href: personalInfo.social.instagram, label: 'Instagram', color: 'hover:bg-pink-600 hover:text-white' },
 ]
 
 const contactInfo = [
