@@ -1,49 +1,69 @@
-# 👋 Welcome to My Portfolio
+# 👨‍💻 Eyuel Cherenet
 
-Hi, I'm **Joel** — a passionate IT student and aspiring software developer focused on building secure, modern, and impactful digital solutions.
+### IT Professional | Web Developer | Networking Enthusiast | Software Developer
 
-This repository represents part of my journey in:
+Welcome to my GitHub portfolio.
+I am passionate about technology, software development, and building modern digital solutions that combine creativity, functionality, and security.
 
-* 🔐 Cryptography & Cybersecurity
-* 💻 Software Development
-* 🌐 Web Technologies
-* ☁️ Cloud & Networking
-* 🚀 Real-World Projects
+I continuously explore different areas of IT including:
 
-I enjoy transforming ideas into practical applications while continuously learning new technologies and improving my problem-solving skills.
-
----
-
-## 🛠️ What I Build
-
-* Secure applications and encryption systems
-* Modern web projects
-* User-focused interfaces
-* Academic and personal development projects
-* Experimental cybersecurity tools
+* 🌐 Web Development
+* 🖥️ Software Development
+* 📡 Networking
+* 🔐 Cybersecurity
+* 🚀 Emerging Technologies
 
 ---
 
-## 📚 Currently Learning
+## 🚀 About Me
 
-* Advanced Cryptography
-* Backend Development
-* Cloud Computing
-* Cybersecurity Fundamentals
-* Modern JavaScript & React
+I enjoy creating projects that help me grow as a developer and strengthen my practical skills in programming and problem-solving. My focus is on learning by building real-world applications and continuously improving my technical knowledge.
 
----
+I am currently expanding my experience in:
 
-## 🎯 Vision
-
-My goal is to become a skilled software engineer and cybersecurity professional capable of building innovative and secure systems that solve real-world problems.
+* Frontend & Backend Development
+* Secure Application Design
+* Network Fundamentals
+* Cybersecurity Concepts
+* Modern Development Tools & Technologies
 
 ---
 
-## 🌍 Connect With Me
+## 🛠️ Skills & Technologies
 
-* GitHub: https://github.com/eyueljoel
+* HTML, CSS, JavaScript
+* Git & GitHub
+* Networking Fundamentals
+* Software Development
+* Basic Cybersecurity Concepts
+* Problem Solving & Project Development
 
 ---
 
-⭐ *Thank you for visiting my project. Feel free to explore, learn, and contribute.*
+## 📌 Projects
+
+This portfolio contains projects related to:
+
+* Cryptography
+* Web Applications
+* Software Projects
+* Networking Practice
+* Learning & Experimental Builds
+
+---
+
+## 📫 Contact
+
+* 📧 Email: [joelcherenet@gmail.com](mailto:joelcherenet@gmail.com)
+* 💻 GitHub: https://github.com/eyueljoel
+
+---
+
+## 🎯 Goal
+
+To become a highly skilled software engineer and IT professional capable of building secure, scalable, and impactful technology solutions.
+
+---
+
+⭐ Thank you for visiting my portfolio.
+free to explore, learn, and contribute.*
