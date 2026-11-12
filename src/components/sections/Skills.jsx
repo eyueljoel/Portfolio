@@ -1,100 +1,201 @@
-import { useState } from 'react'
-import { Code2, Network, Database, Wrench, Users } from 'lucide-react'
-import { useInView } from 'react-intersection-observer'
+import { Code2, Server, Layout, Wrench, Sparkles, CheckCircle2 } from 'lucide-react'
 import SectionHeader from '../ui/SectionHeader'
-import { skills } from '../../data/portfolio'
+import SpotlightCard from '../ui/SpotlightCard'
+import Reveal from '../ui/Reveal'
+import SkillCube from '../ui/SkillCube'
+import { skillGroups } from '../../data/portfolio'
 
-const cats = [
-  { id:'programming', label:'Programming', Icon:Code2, color:'blue' },
-  { id:'networking',  label:'Networking',  Icon:Network, color:'purple' },
-  { id:'databases',   label:'Databases',   Icon:Database, color:'indigo' },
-  { id:'tools',       label:'Tools',       Icon:Wrench, color:'violet' },
-  { id:'soft',        label:'Soft Skills', Icon:Users, color:'green' },
-]
-const cm = {
-  blue:   { tab:'bg-blue-600 text-white',   bar:'from-blue-500 to-blue-600',     badge:'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' },
-  purple: { tab:'bg-purple-600 text-white', bar:'from-purple-500 to-purple-600', badge:'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' },
-  indigo: { tab:'bg-indigo-600 text-white', bar:'from-indigo-500 to-indigo-600', badge:'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' },
-  violet: { tab:'bg-violet-600 text-white', bar:'from-violet-500 to-violet-600', badge:'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400' },
-  green:  { tab:'bg-green-600 text-white',  bar:'from-green-500 to-green-600',   badge:'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' },
-}
-
-function SkillBar({ skill, bar, delay=0 }) {
-  const { ref, inView } = useInView({ triggerOnce:true, threshold:0.1 })
-  return (
-    <div ref={ref} className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2"><span>{skill.icon}</span><span className="text-sm font-medium text-gray-700 dark:text-gray-300">{skill.name}</span></div>
-        <span className="text-sm font-bold text-gray-500 dark:text-gray-400">{skill.level}%</span>
-      </div>
-      <div className="skill-bar">
-        <div className={`skill-fill bg-gradient-to-r ${bar}`} style={{width:inView?`${skill.level}%`:'0%',transitionDelay:`${delay}ms`}} />
-      </div>
-    </div>
-  )
+const levelColors = {
+  Strong: 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
+  Comfortable: 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800',
+  Learning: 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800',
 }
 
 export default function Skills() {
-  const [active, setActive] = useState('programming')
-  const cat = cats.find(c => c.id === active)
-  const list = skills[active] || []
-  const CatIcon = cat?.Icon  // extract to variable so JSX can render it
-
   return (
-    <section id="skills" className="section-padding bg-gray-50 dark:bg-gray-900">
+    <section id="skills" className="section-padding bg-slate-50/50 dark:bg-transparent">
       <div className="max-w-7xl mx-auto">
-        <SectionHeader badge="My Skills" title="Technical" highlight="Expertise" subtitle="A comprehensive overview of my technical skills and proficiency levels." />
+        <Reveal>
+          <SectionHeader
+            badge="Technical Toolkit"
+            title="Practical Skills &"
+            highlight="Proficiencies"
+            subtitle="Honest, experience-verified capabilities across backend engineering, modern frontend interfaces, relational databases, and tools."
+          />
+        </Reveal>
 
-        <div data-aos="fade-up" className="flex flex-wrap justify-center gap-3 mb-12">
-          {cats.map(({ id, label, Icon, color }) => (
-            <button key={id} onClick={() => setActive(id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all border ${active===id ? `${cm[color].tab} border-transparent shadow-md` : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:border-blue-300'}`}>
-              <Icon size={16} />{label}
-            </button>
-          ))}
-        </div>
+        {/* ── Skills Bento Grid ── */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mt-12">
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <div data-aos="fade-right">
-            <div className="card space-y-5">
-              <div className="flex items-center gap-3 mb-6">
-                {CatIcon && <CatIcon size={20} className="text-blue-600 dark:text-blue-400" />}
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{cat?.label} Skills</h3>
-              </div>
-              {list.map((s,i) => <SkillBar key={s.name} skill={s} bar={cm[cat?.color||'blue'].bar} delay={i*100} />)}
-            </div>
-          </div>
-          <div data-aos="fade-left">
-            <div className="grid grid-cols-2 gap-3">
-              {list.map(s => (
-                <div key={s.name} className="p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:shadow-card transition-all hover:-translate-y-0.5 group">
-                  <div className="flex items-center gap-3 mb-3">
-                    <span className="text-2xl group-hover:scale-110 transition-transform">{s.icon}</span>
-                    <span className="font-semibold text-gray-900 dark:text-white text-sm">{s.name}</span>
+          {/* Bento Box 1: Primary Engineering Stack (Large featured card: 12 cols or 8 cols) */}
+          <Reveal delay={100} className="md:col-span-12 lg:col-span-8">
+            <SpotlightCard className="h-full border border-indigo-500/30 p-7 bg-gradient-to-br from-indigo-500/[0.04] via-transparent to-purple-500/[0.04]">
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                    <Server size={20} />
                   </div>
-                  <div className="skill-bar mb-2"><div className={`skill-fill bg-gradient-to-r ${cm[cat?.color||'blue'].bar}`} style={{width:`${s.level}%`}} /></div>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${cm[cat?.color||'blue'].badge}`}>{s.level>=85?'Expert':s.level>=70?'Advanced':'Intermediate'}</span>
-                    <span className="text-xs text-gray-400">{s.level}%</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Primary Engineering Stack</h3>
+                    <p className="text-xs text-indigo-500 font-mono">Core Production Focus</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+
+                <div className="flex items-center gap-2 text-xs font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-slate-500 dark:text-slate-400">Production Tested</span>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                Hands-on backend development, relational database schemas, and dynamic user interfaces utilized during enterprise internship and personal project engineering.
+              </p>
+
+              {/* Primary Stack Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5">
+                {skillGroups[0].skills.map((s) => (
+                  <div
+                    key={s.name}
+                    className="p-3.5 rounded-xl bg-white dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 hover:border-indigo-400 dark:hover:border-indigo-500/40 transition-colors shadow-sm"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-2xl">{s.icon}</span>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${levelColors[s.level]}`}>
+                        {s.level}
+                      </span>
+                    </div>
+                    <p className="font-bold text-sm text-slate-900 dark:text-white">{s.name}</p>
+                  </div>
+                ))}
+              </div>
+            </SpotlightCard>
+          </Reveal>
+
+          {/* Bento Box 2: Frontend & UI (4 cols) */}
+          <Reveal delay={180} className="md:col-span-6 lg:col-span-4">
+            <SpotlightCard className="h-full p-7 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
+                    <Layout size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Frontend & UI</h3>
+                    <p className="text-xs text-purple-500 font-mono">Web Interfaces</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {skillGroups[1].skills.map((s) => (
+                    <div
+                      key={s.name}
+                      className="flex items-center justify-between p-2.5 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/5"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-lg">{s.icon}</span>
+                        <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">{s.name}</span>
+                      </div>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${levelColors[s.level]}`}>
+                        {s.level}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Interactive 3D Skill Cube */}
+                <div className="my-6 hidden sm:flex items-center justify-center py-2">
+                  <SkillCube faces={['Laravel', 'PHP', 'MySQL', 'React', 'Node.js', 'Git']} size={120} />
+                </div>
+              </div>
+
+              <p className="mt-4 text-[11px] text-slate-400 font-mono text-center sm:text-left">
+                Component lifecycles, responsive layouts & CSS design tokens
+              </p>
+            </SpotlightCard>
+          </Reveal>
+
+          {/* Bento Box 3: Additional Languages (6 cols) */}
+          <Reveal delay={260} className="md:col-span-6 lg:col-span-6">
+            <SpotlightCard className="h-full p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-500">
+                  <Code2 size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Programming Languages</h3>
+                  <p className="text-xs text-cyan-500 font-mono">Academic & Systems</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                {skillGroups[2].skills.map((s) => (
+                  <div
+                    key={s.name}
+                    className="p-3 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/5"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xl">{s.icon}</span>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${levelColors[s.level]}`}>
+                        {s.level}
+                      </span>
+                    </div>
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{s.name}</p>
+                  </div>
+                ))}
+              </div>
+            </SpotlightCard>
+          </Reveal>
+
+          {/* Bento Box 4: Tools, OS & Networking (6 cols) */}
+          <Reveal delay={340} className="md:col-span-12 lg:col-span-6">
+            <SpotlightCard className="h-full p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                  <Wrench size={20} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white">Tools, OS & Networking</h3>
+                  <p className="text-xs text-emerald-500 font-mono">Development Workflow</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {skillGroups[3].skills.map((s) => (
+                  <div
+                    key={s.name}
+                    className="p-3 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200/70 dark:border-white/5"
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-xl">{s.icon}</span>
+                      <span className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${levelColors[s.level]}`}>
+                        {s.level}
+                      </span>
+                    </div>
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{s.name}</p>
+                  </div>
+                ))}
+              </div>
+            </SpotlightCard>
+          </Reveal>
+
         </div>
 
-        <div data-aos="fade-up" data-aos-delay="100" className="mt-16">
-          <div className="card">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-8 text-center">All Technologies & Tools</h3>
-            <div className="flex flex-wrap justify-center gap-3">
-              {[{n:'C++',e:'⚡'},{n:'C',e:'🔧'},{n:'Java',e:'☕'},{n:'JavaScript',e:'🌐'},{n:'HTML5',e:'🎨'},{n:'CSS3',e:'💅'},{n:'React',e:'⚛️'},{n:'MySQL',e:'🗄️'},{n:'Git',e:'🐙'},{n:'GitHub',e:'🐱'},{n:'VS Code',e:'💻'},{n:'Packet Tracer',e:'📡'},{n:'Linux',e:'🐧'},{n:'CCNA',e:'🏆'},{n:'OSPF',e:'🔀'},{n:'VLANs',e:'🔌'},{n:'Tailwind CSS',e:'🎯'},{n:'Python',e:'🐍'}].map(({n,e}) => (
-                <span key={n} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600 hover:border-blue-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all hover:-translate-y-0.5 cursor-default">
-                  <span>{e}</span>{n}
-                </span>
-              ))}
-            </div>
+        {/* Legend bar */}
+        <Reveal delay={400} className="mt-8 flex flex-wrap items-center justify-center gap-6 text-xs font-mono text-slate-400">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span>Strong (Primary production competency)</span>
           </div>
-        </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-indigo-500" />
+            <span>Comfortable (Frequent practical application)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+            <span>Learning (Active expansion & study)</span>
+          </div>
+        </Reveal>
+
       </div>
     </section>
   )

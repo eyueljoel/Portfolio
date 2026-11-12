@@ -2,8 +2,6 @@ import { Globe, Network, Palette, BookOpen, Database, Shield, ArrowRight } from 
 import SectionHeader from '../ui/SectionHeader'
 import { services } from '../../data/portfolio'
 
-// Pre-resolve icons ONCE at module level — avoids lucide forwardRef object bug
-// when icons are looked up via string key inside JSX render
 const iconMap = { Globe, Network, Palette, BookOpen, Database, Shield }
 const resolvedServices = services.map(s => ({
   ...s,
@@ -20,43 +18,49 @@ const cm = {
 }
 
 export default function Services() {
-  const go = () => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+  const handleSelectService = (serviceTitle) => {
+    window.dispatchEvent(new CustomEvent('select-service', { detail: { service: serviceTitle } }))
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   return (
     <section id="services" className="section-padding bg-white dark:bg-gray-950">
       <div className="max-w-6xl mx-auto">
         <SectionHeader
           badge="What I Offer"
-          title="My"
+          title="Professional"
           highlight="Services"
-          subtitle="Professional services to help you build, configure, and optimize your digital solutions."
+          subtitle="Specialized capabilities in web engineering, enterprise Cisco network design, database systems, and technical tutoring."
         />
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {resolvedServices.map((s, i) => {
             const Icon = s.IconComponent
             const c = cm[s.color] || cm.blue
             return (
               <div key={s.title} data-aos="fade-up" data-aos-delay={i * 70}>
-                <div className="card h-full flex flex-col group hover:border-blue-200 dark:hover:border-blue-700">
-                  <div className={`w-11 h-11 rounded-xl ${c.icon} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon size={20} />
+                <div className="card h-full flex flex-col group hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-card-hover transition-all duration-300">
+                  <div className={`w-12 h-12 rounded-xl ${c.icon} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm`}>
+                    <Icon size={22} />
                   </div>
                   <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2">{s.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-1">{s.description}</p>
-                  <ul className="space-y-1 mb-4">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-1">{s.description}</p>
+                  
+                  <ul className="space-y-1.5 mb-5 border-t border-gray-100 dark:border-gray-800 pt-3">
                     {s.features.map(f => (
-                      <li key={f} className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                      <li key={f} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                         <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${c.g} flex-shrink-0`} />
                         {f}
                       </li>
                     ))}
                   </ul>
+
                   <button
-                    onClick={go}
-                    className={`flex items-center gap-1 text-sm font-semibold ${c.feat} mt-auto group-hover:gap-2 transition-all`}
+                    onClick={() => handleSelectService(s.title)}
+                    className={`flex items-center justify-between w-full px-3 py-2 rounded-xl bg-gray-50 dark:bg-gray-800/60 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-xs font-semibold ${c.feat} transition-all mt-auto group/btn`}
                   >
-                    Get Started <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+                    <span>Request Service</span>
+                    <ArrowRight size={13} className="group-hover/btn:translate-x-1 transition-transform" />
                   </button>
                 </div>
               </div>

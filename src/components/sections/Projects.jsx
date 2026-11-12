@@ -1,95 +1,223 @@
 import { useState } from 'react'
-import { ExternalLink, Star, Code2, Network, Shield, Globe, FlaskConical } from 'lucide-react'
+import { ExternalLink, Star, Code2, Network, Globe, Terminal, Eye, Layers, CheckCircle2, ArrowRight } from 'lucide-react'
 import { GithubIcon } from '../ui/SocialIcons'
-import { projects, projectCategories } from '../../data/portfolio'
-
-const cm = {
-  blue:   { g:'from-blue-500 to-blue-600',     b:'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',   bdr:'border-blue-100 dark:border-blue-800',   glow:'hover:shadow-glow-blue' },
-  purple: { g:'from-purple-500 to-purple-600', b:'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400', bdr:'border-purple-100 dark:border-purple-800', glow:'hover:shadow-glow-purple' },
-  indigo: { g:'from-indigo-500 to-indigo-600', b:'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400', bdr:'border-indigo-100 dark:border-indigo-800', glow:'hover:shadow-glow-blue' },
-  violet: { g:'from-violet-500 to-violet-600', b:'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400', bdr:'border-violet-100 dark:border-violet-800', glow:'hover:shadow-glow-purple' },
-  green:  { g:'from-green-500 to-emerald-600', b:'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',   bdr:'border-green-100 dark:border-green-800', glow:'hover:shadow-card-hover' },
-}
-const catIcons = { networking:Network, cpp:Code2, security:Shield, web:Globe, research:FlaskConical }
-const catEmoji = { networking:'📡', cpp:'⚡', security:'🔐', web:'🌐', research:'🔬' }
-
-function ProjectCard({ project, index }) {
-  const c = cm[project.color] || cm.blue
-  const CatIcon = catIcons[project.category] || Code2
-  return (
-    <div data-aos="fade-up" data-aos-delay={index*80}>
-      <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-card ${c.glow} hover:shadow-card-hover transition-all duration-300 hover:-translate-y-2 flex flex-col h-full`}>
-        {project.featured && (
-          <div className="absolute top-3 right-3 z-10">
-            <span className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold bg-yellow-50 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400 border border-yellow-100 dark:border-yellow-800">
-              <Star size={10} className="fill-yellow-500 text-yellow-500" />Featured
-            </span>
-          </div>
-        )}
-        <div className={`relative h-44 bg-gradient-to-br ${c.g} overflow-hidden`}>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="text-6xl mb-2 group-hover:scale-110 transition-transform duration-300">{catEmoji[project.category]||'💻'}</div>
-              <div className="flex items-center gap-1 text-white/80 text-xs"><CatIcon size={12} /><span className="capitalize">{project.category}</span></div>
-            </div>
-          </div>
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full" />
-          <div className="absolute -bottom-4 -left-4 w-20 h-20 bg-white/10 rounded-full" />
-        </div>
-        <div className="p-5 flex flex-col flex-1">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{project.title}</h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4 flex-1">{project.description}</p>
-          <div className="flex flex-wrap gap-1.5 mb-4">
-            {project.tech.map(t => <span key={t} className={`px-2 py-0.5 rounded-md text-xs font-medium ${c.b} border ${c.bdr}`}>{t}</span>)}
-          </div>
-          <div className="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
-            <a href={project.github} target="_blank" rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-all">
-              <GithubIcon size={14} />GitHub
-            </a>
-            {project.demo
-              ? <a href={project.demo} target="_blank" rel="noopener noreferrer" className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-white bg-gradient-to-r ${c.g} hover:opacity-90 transition-all`}><ExternalLink size={14} />Live Demo</a>
-              : <span className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-700/50 cursor-not-allowed"><ExternalLink size={14} />Coming Soon</span>
-            }
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { projects, projectCategories, featuredProject } from '../../data/portfolio'
+import GlareTilt from '../ui/GlareTilt'
+import SpotlightCard from '../ui/SpotlightCard'
+import Reveal from '../ui/Reveal'
+import ProjectModal from '../ui/ProjectModal'
 
 export default function Projects() {
   const [filter, setFilter] = useState('all')
+  const [selectedProject, setSelectedProject] = useState(null)
+
   const list = filter === 'all' ? projects : projects.filter(p => p.category === filter)
 
-  return (
-    <section id="projects" className="section-padding bg-white dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16" data-aos="fade-up">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />My Work
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">Featured <span className="gradient-text">Projects</span></h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">A collection of projects showcasing my skills in software development, networking, and problem solving.</p>
-        </div>
+  const getCategoryCount = (catId) => {
+    if (catId === 'all') return projects.length
+    return projects.filter(p => p.category === catId).length
+  }
 
-        <div data-aos="fade-up" data-aos-delay="100" className="flex flex-wrap justify-center gap-2 mb-12">
-          {projectCategories.map(({ id, label }) => (
-            <button key={id} onClick={() => setFilter(id)} className={`filter-btn ${filter===id?'active':''}`}>{label}</button>
+  return (
+    <section id="projects" className="section-padding bg-transparent">
+      <div className="max-w-7xl mx-auto">
+
+        {/* Section Header */}
+        <Reveal>
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold glass text-indigo-600 dark:text-indigo-400 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" /> Engineering Portfolio
+            </span>
+            <h2 className="scroll-3d text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Featured <span className="text-gradient">Projects</span>
+            </h2>
+            <p className="text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Production ERP systems, point-of-sale applications, and systems software built with Laravel, PHP, React, Node.js, and C++.
+            </p>
+          </div>
+        </Reveal>
+
+        {/* ── Featured Showcase: TewosHR (Large Card with Gradient Border) ── */}
+        <Reveal delay={100} className="mb-14">
+          <div className="gradient-border p-[1px] shadow-2xl">
+            <div className="bg-white dark:bg-ink rounded-[1.2rem] p-6 sm:p-10">
+              <div className="grid lg:grid-cols-12 gap-8 items-center">
+                
+                <div className="lg:col-span-7 space-y-4">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                      <Star size={12} className="fill-indigo-500 text-indigo-500" /> Featured Internship Project
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">Tewos Company · 2024</span>
+                  </div>
+
+                  <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                    {featuredProject.title}
+                  </h3>
+
+                  <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {featuredProject.summary}
+                  </p>
+
+                  <div className="space-y-2 pt-2">
+                    <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">What I Personally Built:</p>
+                    <ul className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-1.5">
+                      {featuredProject.highlights.map((h, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 size={14} className="text-indigo-500 mt-0.5 flex-shrink-0" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-3">
+                    {featuredProject.stack.map((t) => (
+                      <span
+                        key={t}
+                        className="px-3 py-1 rounded-lg text-xs font-mono font-medium bg-slate-100 dark:bg-white/[0.05] text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 pt-4">
+                    <button
+                      onClick={() => setSelectedProject(projects[0])}
+                      className="btn-primary cursor-pointer text-xs sm:text-sm py-2.5"
+                    >
+                      <Terminal size={15} /> View Architecture & Code
+                    </button>
+                    <a
+                      href={featuredProject.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-ghost flex items-center gap-2 text-xs sm:text-sm py-2.5 cursor-pointer"
+                    >
+                      <GithubIcon size={15} /> GitHub Repository
+                    </a>
+                  </div>
+                </div>
+
+                {/* Right Code/Terminal Preview Mockup */}
+                <div className="lg:col-span-5">
+                  <div className="rounded-2xl bg-slate-950 border border-white/10 shadow-2xl overflow-hidden font-mono text-xs">
+                    <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 border-b border-white/5 text-slate-400">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
+                        <span className="ml-2 text-[11px] text-slate-500">PayrollService.php</span>
+                      </div>
+                      <span className="text-[10px] text-indigo-400">Laravel 11</span>
+                    </div>
+                    <div className="p-4 overflow-x-auto text-slate-300 leading-relaxed text-[11px]">
+                      <pre>{featuredProject.codeSnippet}</pre>
+                    </div>
+                    <div className="px-4 py-2 bg-slate-900/60 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-500">
+                      <span>✓ MySQL Data Model</span>
+                      <span>✓ Clean Service Layer</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </Reveal>
+
+        {/* ── Category Filter Buttons with Live Count Pills ── */}
+        <Reveal delay={150}>
+          <div className="flex flex-wrap justify-center gap-2 mb-12">
+            {projectCategories.map(({ id, label }) => {
+              const count = getCategoryCount(id)
+              const isActive = filter === id
+              return (
+                <button
+                  key={id}
+                  onClick={() => setFilter(id)}
+                  className={`filter-btn flex items-center gap-2 cursor-pointer ${isActive ? 'active' : ''}`}
+                >
+                  <span>{label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${isActive ? 'bg-white/20 text-white' : 'bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400'}`}>
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </Reveal>
+
+        {/* ── 3D Tilt Project Cards Grid ── */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {list.map((p, i) => (
+            <Reveal key={p.id} delay={i * 80}>
+              <GlareTilt className="h-full">
+                <SpotlightCard
+                  onClick={() => setSelectedProject(p)}
+                  className="h-full flex flex-col justify-between cursor-pointer border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 transition-colors group"
+                >
+                  <div>
+                    {/* Top Meta Bar */}
+                    <div className="flex items-center justify-between gap-2 mb-3">
+                      <span className="text-[11px] font-mono font-medium px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-900/50 uppercase tracking-wider">
+                        {p.category}
+                      </span>
+                      {p.featured && (
+                        <span className="flex items-center gap-1 text-[11px] font-semibold text-amber-500">
+                          <Star size={11} className="fill-amber-500" /> Featured
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      {p.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-4 line-clamp-3">
+                      {p.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    {/* Tech Pills */}
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {p.tech.map((t) => (
+                        <span
+                          key={t}
+                          className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-slate-100 dark:bg-white/[0.05] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/5"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Card Actions */}
+                    <div
+                      className="pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500"
+                    >
+                      <span className="flex items-center gap-1">
+                        <Terminal size={13} /> Architecture & Code
+                      </span>
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </SpotlightCard>
+              </GlareTilt>
+            </Reveal>
           ))}
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {list.map((p,i) => <ProjectCard key={p.id} project={p} index={i} />)}
-        </div>
-
-        <div data-aos="fade-up" className="text-center mt-12">
-          <a href="https://github.com/eyueljoel" target="_blank" rel="noopener noreferrer" className="btn-secondary inline-flex">
-            <GithubIcon size={16} />View All on GitHub
-          </a>
-        </div>
       </div>
+
+      {/* Interactive Detail Modal */}
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
     </section>
   )
 }

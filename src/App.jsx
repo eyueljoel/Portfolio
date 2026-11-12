@@ -2,10 +2,15 @@ import { useEffect, Component } from 'react'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 import { useDarkMode } from './hooks/useDarkMode'
+import { useSectionReveal } from './hooks/useSectionReveal'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
-import ScrollProgress from './components/layout/ScrollProgress'
 import CursorGlow from './components/layout/CursorGlow'
+import CursorRing from './components/ui/CursorRing'
+import PageProgress from './components/ui/PageProgress'
+import ToastContainer from './components/ui/Toast'
+import CommandPalette from './components/ui/CommandPalette'
+
 import Hero from './components/sections/Hero'
 import About from './components/sections/About'
 import Skills from './components/sections/Skills'
@@ -13,10 +18,11 @@ import Projects from './components/sections/Projects'
 import Experience from './components/sections/Experience'
 import Services from './components/sections/Services'
 import Stats from './components/sections/Stats'
+import Testimonials from './components/sections/Testimonials'
 import Blog from './components/sections/Blog'
 import Contact from './components/sections/Contact'
 
-// Silent error boundary — hides crashed sections instead of showing error UI
+// Error boundary with fallback
 class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
@@ -26,7 +32,7 @@ class ErrorBoundary extends Component {
     return { hasError: true }
   }
   componentDidCatch(error) {
-    console.error('Section error:', error)
+    console.error('Section error caught:', error)
   }
   render() {
     if (this.state.hasError) return null
@@ -36,6 +42,7 @@ class ErrorBoundary extends Component {
 
 function PortfolioApp() {
   const [isDark, toggleDark] = useDarkMode()
+  useSectionReveal()
 
   useEffect(() => {
     AOS.init({ duration: 650, easing: 'ease-out-cubic', once: true, offset: 40 })
@@ -48,18 +55,26 @@ function PortfolioApp() {
 
   return (
     <div className={isDark ? 'dark' : ''}>
-      <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
-        <ScrollProgress />
+      <div className="min-h-screen bg-white dark:bg-ink text-slate-900 dark:text-slate-200 transition-colors duration-200 relative">
+        {/* Film grain texture */}
+        <div className="noise" aria-hidden="true" />
+        
+        <PageProgress />
+        <CursorRing />
         <CursorGlow />
+        <ToastContainer />
+        <CommandPalette isDark={isDark} toggleDark={toggleDark} />
+        
         <Navbar isDark={isDark} toggleDark={toggleDark} />
         <main>
           <ErrorBoundary><Hero /></ErrorBoundary>
           <ErrorBoundary><About /></ErrorBoundary>
+          <ErrorBoundary><Stats /></ErrorBoundary>
           <ErrorBoundary><Skills /></ErrorBoundary>
           <ErrorBoundary><Projects /></ErrorBoundary>
           <ErrorBoundary><Experience /></ErrorBoundary>
           <ErrorBoundary><Services /></ErrorBoundary>
-          <ErrorBoundary><Stats /></ErrorBoundary>
+          <ErrorBoundary><Testimonials /></ErrorBoundary>
           <ErrorBoundary><Blog /></ErrorBoundary>
           <ErrorBoundary><Contact /></ErrorBoundary>
         </main>

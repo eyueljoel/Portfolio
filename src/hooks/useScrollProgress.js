@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 
 export function useScrollProgress() {
   const [progress, setProgress] = useState(0)
@@ -13,29 +13,35 @@ export function useScrollProgress() {
   return progress
 }
 
-// Pass a stable string[] — defined outside component or with useMemo
 export function useActiveSection(sections) {
-  const [active, setActive] = useState('')
-  // Use a ref so the effect never re-runs due to array identity changes
-  const sectionsRef = useRef(sections)
+  const [active, setActive] = useState(sections[0] || 'home')
 
   useEffect(() => {
-    const ids = sectionsRef.current
     const onScroll = () => {
-      const y = window.scrollY + 120
-      for (const id of ids) {
+      const scrollPos = window.scrollY + 160
+      // If at bottom of page, activate last item
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50) {
+        setActive(sections[sections.length - 1])
+        return
+      }
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const id = sections[i]
         const el = document.getElementById(id)
         if (!el) continue
-        if (y >= el.offsetTop && y < el.offsetTop + el.offsetHeight) {
+        const rect = el.getBoundingClientRect()
+        const top = rect.top + window.scrollY
+        if (scrollPos >= top) {
           setActive(id)
           break
         }
       }
     }
+
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
     return () => window.removeEventListener('scroll', onScroll)
-  }, []) // empty deps — runs once only
+  }, [sections])
 
   return active
 }

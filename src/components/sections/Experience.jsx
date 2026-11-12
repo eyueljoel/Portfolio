@@ -1,95 +1,177 @@
-import { GraduationCap, Award, Code2, Globe, Rocket } from 'lucide-react'
-import { timeline } from '../../data/portfolio'
-
-// Resolve icon strings to components once, outside render
-const iconMap = {
-  GraduationCap,
-  Award,
-  Code2,
-  Globe,
-  Rocket,
-}
-
-// Pre-resolve so we never call iconMap[x] inside JSX render
-const resolvedTimeline = timeline.map(item => ({
-  ...item,
-  IconComponent: iconMap[item.icon] || GraduationCap,
-}))
-const typeColors = {
-  education:    { dot:'from-blue-500 to-blue-600',     badge:'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-800',     label:'Education' },
-  certification:{ dot:'from-yellow-500 to-orange-500', badge:'bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 border-yellow-100 dark:border-yellow-800', label:'Certification' },
-  learning:     { dot:'from-purple-500 to-purple-600', badge:'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-800', label:'Learning' },
-  milestone:    { dot:'from-green-500 to-emerald-500', badge:'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border-green-100 dark:border-green-800',   label:'Milestone' },
-}
+import { Briefcase, GraduationCap, Award, Calendar, MapPin, CheckCircle2 } from 'lucide-react'
+import SectionHeader from '../ui/SectionHeader'
+import SpotlightCard from '../ui/SpotlightCard'
+import Reveal from '../ui/Reveal'
+import { profile } from '../../data/portfolio'
 
 export default function Experience() {
   return (
-    <section id="experience" className="section-padding bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16" data-aos="fade-up">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />My Journey
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">Education & <span className="gradient-text">Experience</span></h2>
-          <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">My academic background, certifications, and technical learning journey.</p>
-        </div>
+    <section id="experience" className="section-padding bg-slate-50/50 dark:bg-transparent">
+      <div className="max-w-5xl mx-auto">
+        <Reveal>
+          <SectionHeader
+            badge="My Journey"
+            title="Professional Experience &"
+            highlight="Education"
+            subtitle="Hands-on software development experience, university academics, and foundational engineering training."
+          />
+        </Reveal>
 
-        <div className="max-w-3xl mx-auto">
-          {resolvedTimeline.map((item, i) => {
-            const Icon = item.IconComponent
-            const c = typeColors[item.type] || typeColors.education
-            return (
-              <div key={i} data-aos={i%2===0?'fade-right':'fade-left'} data-aos-delay={i*80}>
-                <div className="timeline-item">
-                  <div className={`timeline-dot bg-gradient-to-r ${c.dot}`}><Icon size={12} className="text-white" /></div>
-                  <div className="card ml-4 group hover:border-blue-200 dark:hover:border-blue-700">
-                    <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${c.badge}`}>{c.label}</span>
-                          <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">{item.year}</span>
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{item.title}</h3>
-                        <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">{item.organization}</p>
-                      </div>
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-r ${c.dot} flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 transition-transform`}>
-                        <Icon size={18} className="text-white" />
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">{item.description}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {item.tags.map(t => <span key={t} className="px-2 py-0.5 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">{t}</span>)}
-                    </div>
+        {/* Vertical Timeline */}
+        <div className="mt-12 relative pl-6 sm:pl-8 border-l border-slate-200 dark:border-white/10 space-y-12 ml-2 sm:ml-4">
+
+          {/* 1. Tewos Company Internship (Featured First) */}
+          <Reveal delay={100} className="relative">
+            {/* Timeline Dot */}
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-7 h-7 rounded-full bg-indigo-500 border-4 border-white dark:border-ink flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+              <Briefcase size={12} />
+            </div>
+
+            <SpotlightCard className="p-6 sm:p-7 border border-indigo-500/20 shadow-lg shadow-indigo-500/5">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold font-mono bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                      Internship
+                    </span>
+                    <span className="flex items-center gap-1 text-xs font-mono text-slate-400">
+                      <Calendar size={12} /> June 29, 2024 – August 29, 2024
+                    </span>
                   </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Software Developer Intern</h3>
+                  <p className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5 mt-0.5">
+                    <span>Tewos Company</span>
+                    <span>·</span>
+                    <span className="text-xs font-normal text-slate-400 flex items-center gap-1"><MapPin size={11} /> Ethiopia</span>
+                  </p>
+                </div>
+
+                <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-xl bg-slate-100 dark:bg-white/[0.04] text-xs font-mono text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5">
+                  <CheckCircle2 size={13} className="text-emerald-500" /> Verified Production Experience
                 </div>
               </div>
-            )
-          })}
-        </div>
 
-        <div data-aos="fade-up" data-aos-delay="200" className="mt-16 grid md:grid-cols-2 gap-6">
-          <div className="card border-2 border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-500 flex items-center justify-center shadow-lg flex-shrink-0"><span className="text-3xl">🏆</span></div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Cisco CCNA</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Cisco Certified Network Associate</p>
-                <div className="flex items-center gap-2 mt-1"><span className="w-2 h-2 rounded-full bg-green-500" /><span className="text-xs text-green-600 dark:text-green-400 font-medium">Certified 2024</span></div>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                Contributed to the development and enhancement of an enterprise HR and Payroll Management System, learning an established production codebase and working with a collaborative development team.
+              </p>
+
+              {/* Responsibilities list */}
+              <div className="space-y-2 mb-5">
+                <p className="text-xs font-mono text-slate-400 uppercase tracking-wider">Key Contributions:</p>
+                <ul className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-2">
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>Contributed to core payroll processing logic and employee information modules using <strong>Laravel, PHP, and MySQL</strong>.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>Investigated and resolved bugs across existing ERP modules, refactoring backend workflows to enhance operational stability.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>Collaborated with engineering peers using <strong>Git and GitHub</strong> for version control, issue tracking, and code reviews.</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
+                    <span>Participated in feature development for restaurant point-of-sale (POS) and client e-commerce software workflows.</span>
+                  </li>
+                </ul>
               </div>
-            </div>
-            <p className="mt-4 pt-4 border-t border-yellow-200 dark:border-yellow-800 text-xs text-gray-500 dark:text-gray-400">Covers network fundamentals, IP connectivity, IP services, security fundamentals, automation and programmability.</p>
-          </div>
-          <div className="card border-2 border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg flex-shrink-0"><span className="text-3xl">🎓</span></div>
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">B.Sc. Information Technology</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">University — Ethiopia</p>
-                <div className="flex items-center gap-2 mt-1"><span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" /><span className="text-xs text-blue-600 dark:text-blue-400 font-medium">In Progress — 2023–Present</span></div>
+
+              {/* Tech stack tags */}
+              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-slate-200 dark:border-white/10">
+                {['Laravel', 'PHP', 'MySQL', 'JavaScript', 'Git', 'GitHub', 'ERP Modules', 'REST APIs'].map((t) => (
+                  <span
+                    key={t}
+                    className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-indigo-50/50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-900/40"
+                  >
+                    {t}
+                  </span>
+                ))}
               </div>
+            </SpotlightCard>
+          </Reveal>
+
+          {/* 2. Haramaya University Education */}
+          <Reveal delay={200} className="relative">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-7 h-7 rounded-full bg-emerald-500 border-4 border-white dark:border-ink flex items-center justify-center text-white shadow-md shadow-emerald-500/30">
+              <GraduationCap size={12} />
             </div>
-            <p className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-800 text-xs text-gray-500 dark:text-gray-400">Studying software engineering, networking, databases, algorithms, cybersecurity, and system design.</p>
-          </div>
+
+            <SpotlightCard className="p-6 sm:p-7">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold font-mono bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                      Undergraduate
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">2023 – Present</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">B.Sc. Information Technology</h3>
+                  <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                    Haramaya University, Ethiopia
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                Undertaking formal higher education in IT, cultivating strong analytical and practical foundations across systems engineering, database modeling, and algorithms.
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-200 dark:border-white/10">
+                {['Software Engineering', 'Relational Databases', 'OOP', 'Data Structures', 'Web Development'].map((t) => (
+                  <span
+                    key={t}
+                    className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/5"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </SpotlightCard>
+          </Reveal>
+
+          {/* 3. Cisco Networking Academy (Introduction to Networks) */}
+          <Reveal delay={300} className="relative">
+            <div className="absolute -left-[31px] sm:-left-[39px] top-1.5 w-7 h-7 rounded-full bg-cyan-500 border-4 border-white dark:border-ink flex items-center justify-center text-white shadow-md shadow-cyan-500/30">
+              <Award size={12} />
+            </div>
+
+            <SpotlightCard className="p-6 sm:p-7">
+              <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold font-mono bg-cyan-50 dark:bg-cyan-950/60 text-cyan-600 dark:text-cyan-400 border border-cyan-200 dark:border-cyan-800">
+                      Coursework Completed
+                    </span>
+                    <span className="text-xs font-mono text-slate-400">2024</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    Cisco Networking Academy: Introduction to Networks (CCNA v7 ITN)
+                  </h3>
+                  <p className="text-sm font-semibold text-cyan-600 dark:text-cyan-400 mt-0.5">
+                    Cisco Networking Academy
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                Completed structured curriculum covering network architectures, IP addressing (IPv4/IPv6 VLSM subnetting), packet tracing simulations, Ethernet switching, and router configurations.
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-200 dark:border-white/10">
+                {['CCNA v7 ITN', 'IPv4 & IPv6 Subnetting', 'Cisco Packet Tracer', 'TCP/IP Protocol Suite'].map((t) => (
+                  <span
+                    key={t}
+                    className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/5"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            </SpotlightCard>
+          </Reveal>
+
         </div>
       </div>
     </section>

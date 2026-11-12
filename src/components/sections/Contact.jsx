@@ -1,61 +1,83 @@
-import { useState } from 'react'
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, Loader } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, Loader, Copy, Check, Eye, EyeOff, MessageSquare } from 'lucide-react'
 import { useInView } from 'react-intersection-observer'
 import emailjs from '@emailjs/browser'
 import { GithubIcon, LinkedinIcon, TelegramIcon, FacebookIcon, InstagramIcon } from '../ui/SocialIcons'
-import { personalInfo } from '../../data/portfolio'
+import { profile } from '../../data/portfolio'
+import { showToast } from '../ui/Toast'
+import SpotlightCard from '../ui/SpotlightCard'
+import Reveal from '../ui/Reveal'
 
-// ─── EmailJS config ───────────────────────────────────────────────────────────
-// 1. Go to https://www.emailjs.com and sign up (free)
-// 2. Add Gmail service  →  copy Service ID  →  paste below
-// 3. Create Email Template with variables: {{from_name}}, {{from_email}}, {{subject}}, {{message}}
-//    →  copy Template ID  →  paste below
-// 4. Go to Account → API Keys  →  copy Public Key  →  paste below
 const EMAILJS_SERVICE_ID  = import.meta.env.VITE_EMAILJS_SERVICE_ID  || 'YOUR_SERVICE_ID'
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
 const EMAILJS_PUBLIC_KEY  = import.meta.env.VITE_EMAILJS_PUBLIC_KEY  || 'YOUR_PUBLIC_KEY'
 const CONFIGURED = !EMAILJS_SERVICE_ID.startsWith('YOUR')
 
 const socials = [
-  { Icon: GithubIcon,    href: personalInfo.social.github,    label: 'GitHub',    color: 'hover:bg-gray-900 hover:text-white dark:hover:bg-white dark:hover:text-gray-900' },
-  { Icon: LinkedinIcon,  href: personalInfo.social.linkedin,  label: 'LinkedIn',  color: 'hover:bg-blue-600 hover:text-white' },
-  { Icon: TelegramIcon,  href: personalInfo.social.telegram,  label: 'Telegram',  color: 'hover:bg-sky-500 hover:text-white' },
-  { Icon: FacebookIcon,  href: personalInfo.social.facebook,  label: 'Facebook',  color: 'hover:bg-blue-700 hover:text-white' },
-  { Icon: InstagramIcon, href: personalInfo.social.instagram, label: 'Instagram', color: 'hover:bg-pink-600 hover:text-white' },
-]
-
-const contactInfo = [
-  { Icon: Mail,   label: 'Email',    value: personalInfo.email,    href: `mailto:${personalInfo.email}` },
-  { Icon: Phone,  label: 'Phone',    value: personalInfo.phone,    href: `tel:${personalInfo.phone}` },
-  { Icon: MapPin, label: 'Location', value: personalInfo.location, href: null },
+  { Icon: GithubIcon,    href: profile.social.github,    label: 'GitHub',    color: 'hover:text-white dark:hover:text-white' },
+  { Icon: LinkedinIcon,  href: profile.social.linkedin,  label: 'LinkedIn',  color: 'hover:text-indigo-400' },
+  { Icon: TelegramIcon,  href: profile.social.telegram,  label: 'Telegram',  color: 'hover:text-sky-400' },
+  { Icon: FacebookIcon,  href: profile.social.facebook,  label: 'Facebook',  color: 'hover:text-blue-400' },
+  { Icon: InstagramIcon, href: profile.social.instagram, label: 'Instagram', color: 'hover:text-pink-400' },
 ]
 
 export default function Contact() {
-  const [form, setForm]     = useState({ name: '', email: '', subject: '', message: '' })
-  const [errors, setErrors] = useState({})
-  const [status, setStatus] = useState('idle')
-  const [errMsg, setErrMsg] = useState('')
+  const [form, setForm]         = useState({ name: '', email: '', subject: '', message: '' })
+  const [errors, setErrors]     = useState({})
+  const [status, setStatus]     = useState('idle')
+  const [errMsg, setErrMsg]     = useState('')
+  const [copiedEmail, setCopiedEmail] = useState(false)
+  const [copiedPhone, setCopiedPhone] = useState(false)
+  const [showPhone, setShowPhone]     = useState(false)
 
-  // Use inView with very low threshold so it always triggers
-  const { ref: sectionRef, inView } = useInView({ triggerOnce: true, threshold: 0.01 })
+  // Listen for pre-selected service from Services section
+  useEffect(() => {
+    const handleServiceSelect = (e) => {
+      const service = e.detail?.service
+      if (service) {
+        setForm((prev) => ({
+          ...prev,
+          subject: `Service Inquiry: ${service}`,
+          message: `Hi Eyuel,\n\nI would like to discuss working together on ${service}. Here are the project requirements:\n`,
+        }))
+        showToast(`Inquiry template loaded for ${service}`, 'info')
+      }
+    }
+    window.addEventListener('select-service', handleServiceSelect)
+    return () => window.removeEventListener('select-service', handleServiceSelect)
+  }, [])
+
+  const copyEmail = () => {
+    navigator.clipboard.writeText(profile.email)
+    setCopiedEmail(true)
+    showToast('Email copied to clipboard!', 'copy')
+    setTimeout(() => setCopiedEmail(false), 2000)
+  }
+
+  const copyPhone = () => {
+    navigator.clipboard.writeText(profile.phone)
+    setCopiedPhone(true)
+    showToast('Phone number copied to clipboard!', 'copy')
+    setTimeout(() => setCopiedPhone(false), 2000)
+  }
 
   const validate = () => {
     const e = {}
     if (!form.name.trim())    e.name    = 'Name is required'
     if (!form.email.trim())   e.email   = 'Email is required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Invalid email'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = 'Valid email is required'
     if (!form.message.trim()) e.message = 'Message is required'
     else if (form.message.trim().length < 10) e.message = 'At least 10 characters'
     return e
   }
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target
-    setForm(p => ({ ...p, [name]: value }))
-    if (errors[name]) setErrors(p => ({ ...p, [name]: '' }))
+    setForm((p) => ({ ...p, [name]: value }))
+    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }))
   }
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const errs = validate()
     if (Object.keys(errs).length) { setErrors(errs); return }
@@ -64,7 +86,6 @@ export default function Contact() {
     setErrMsg('')
 
     if (CONFIGURED) {
-      // ── Send via EmailJS → arrives in joelcherenet@gmail.com ──
       try {
         await emailjs.send(
           EMAILJS_SERVICE_ID,
@@ -72,178 +93,275 @@ export default function Contact() {
           {
             from_name:  form.name.trim(),
             from_email: form.email.trim(),
-            subject:    form.subject.trim() || 'Portfolio Contact',
+            subject:    form.subject.trim() || 'Portfolio Inquiry',
             message:    form.message.trim(),
             reply_to:   form.email.trim(),
           },
           EMAILJS_PUBLIC_KEY
         )
         setStatus('success')
+        showToast('Message transmitted successfully!', 'success')
         setForm({ name: '', email: '', subject: '', message: '' })
         setTimeout(() => setStatus('idle'), 6000)
       } catch (err) {
         console.error('EmailJS error:', err)
-        setErrMsg('Failed to send. Please email me directly at ' + personalInfo.email)
+        setErrMsg('Failed to send. Please email me directly at ' + profile.email)
         setStatus('error')
+        showToast('Failed to send. Please use direct email.', 'error')
         setTimeout(() => setStatus('idle'), 8000)
       }
     } else {
-      // ── Fallback: open mailto when EmailJS not configured ──
-      await new Promise(r => setTimeout(r, 600))
-      const sub  = encodeURIComponent(form.subject || 'Portfolio Contact')
+      // Fallback: mailto
+      await new Promise((r) => setTimeout(r, 400))
+      const sub  = encodeURIComponent(form.subject || 'Portfolio Inquiry')
       const body = encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)
-      window.open(`mailto:${personalInfo.email}?subject=${sub}&body=${body}`)
+      window.open(`mailto:${profile.email}?subject=${sub}&body=${body}`)
       setStatus('success')
+      showToast('Opening default email client...', 'success')
       setForm({ name: '', email: '', subject: '', message: '' })
       setTimeout(() => setStatus('idle'), 6000)
     }
   }
 
   return (
-    <section id="contact" className="section-padding bg-white dark:bg-gray-950">
-      <div
-        ref={sectionRef}
-        className={`max-w-6xl mx-auto transition-all duration-700 ease-out ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}
-      >
-        {/* Header */}
-        <div className="text-center mb-14">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-            Get In Touch
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-3">
-            Let's <span className="gradient-text">Connect</span>
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-            Have a project in mind or want to collaborate? I'd love to hear from you.
-          </p>
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-10">
-
-          {/* ── Left — info ── */}
-          <div className="space-y-6">
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-              I'm open to freelance projects, internship opportunities, and collaborations.
-              Whether you need a website, network configuration, or programming help — let's talk!
+    <section id="contact" className="section-padding bg-transparent">
+      <div className="max-w-6xl mx-auto">
+        <Reveal>
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold glass text-indigo-600 dark:text-indigo-400 mb-4">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Direct Contact
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Let's Build Something <span className="text-gradient">Meaningful</span>
+            </h2>
+            <p className="text-base text-slate-600 dark:text-slate-400 max-w-xl mx-auto">
+              Interested in hiring for a software developer role, internship, or collaborating on a web/ERP project? Send a direct message.
             </p>
+          </div>
+        </Reveal>
 
-            {/* Contact details */}
-            <div className="space-y-3">
-              {contactInfo.map(({ Icon, label, value, href }) => (
-                <div key={label} className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-                    <Icon size={16} className="text-white" />
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
+
+          {/* ── Left Column: Contact Cards & Channels (5 cols) ── */}
+          <Reveal delay={100} className="lg:col-span-5 space-y-4">
+            <SpotlightCard className="p-6 sm:p-7">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">Direct Channels</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+                Fastest response via email or Telegram
+              </p>
+
+              {/* Email Card */}
+              <div className="p-3.5 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500 flex-shrink-0">
+                    <Mail size={16} />
                   </div>
-                  <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">{label}</p>
-                    {href
-                      ? <a href={href} className="text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{value}</a>
-                      : <p className="text-sm font-semibold text-gray-900 dark:text-white">{value}</p>
-                    }
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-mono text-slate-400">Email Address</p>
+                    <a href={`mailto:${profile.email}`} className="text-xs font-semibold text-slate-800 dark:text-slate-200 hover:text-indigo-500 truncate block">
+                      {profile.email}
+                    </a>
                   </div>
                 </div>
-              ))}
-            </div>
+                <button
+                  onClick={copyEmail}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-500 transition-colors ml-2"
+                  title="Copy Email"
+                >
+                  {copiedEmail ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                </button>
+              </div>
 
-            {/* Social links */}
-            <div>
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Find me on</p>
-              <div className="flex gap-3">
-                {socials.map(({ Icon, href, label, color }) => (
-                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                    className={`w-10 h-10 rounded-xl border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-400 ${color} transition-all hover:-translate-y-0.5`}>
-                    <Icon size={18} />
+              {/* Phone Card (Protected with Reveal / Copy) */}
+              <div className="p-3.5 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center text-cyan-500 flex-shrink-0">
+                    <Phone size={16} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-mono text-slate-400">Direct Phone</p>
+                    <p className="text-xs font-mono font-semibold text-slate-800 dark:text-slate-200">
+                      {showPhone ? profile.phone : '+251 ••• ••• •••'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 ml-2">
+                  <button
+                    onClick={() => setShowPhone(!showPhone)}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-500 transition-colors"
+                    title={showPhone ? 'Hide phone' : 'Reveal phone'}
+                  >
+                    {showPhone ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                  <button
+                    onClick={copyPhone}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-500 transition-colors"
+                    title="Copy Phone"
+                  >
+                    {copiedPhone ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Location Card */}
+              <div className="p-3.5 rounded-xl bg-slate-100/70 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500 flex-shrink-0">
+                  <MapPin size={16} />
+                </div>
+                <div>
+                  <p className="text-[10px] font-mono text-slate-400">Current Location & Zone</p>
+                  <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    {profile.location} · {profile.timezone}
+                  </p>
+                </div>
+              </div>
+
+              {/* Social Channels Strip */}
+              <div className="pt-5 mt-5 border-t border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
+                <span className="text-xs font-mono text-slate-400">Socials:</span>
+                <div className="flex items-center gap-2">
+                  {socials.map(({ Icon, href, label, color }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      className={`w-8 h-8 rounded-lg glass flex items-center justify-center text-slate-400 ${color} transition-colors`}
+                    >
+                      <Icon size={15} />
+                    </a>
+                  ))}
+                  <a
+                    href={profile.social.telegram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-900/50 hover:bg-sky-500 hover:text-white transition-all ml-1"
+                  >
+                    <MessageSquare size={13} /> Telegram
                   </a>
-                ))}
+                </div>
               </div>
-            </div>
+            </SpotlightCard>
 
-            {/* Availability */}
-            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
+            {/* Availability Callout */}
+            <SpotlightCard className="p-5 border border-emerald-500/20 bg-emerald-500/[0.02]">
               <div className="flex items-center gap-2 mb-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm font-semibold text-green-700 dark:text-green-400">Available for opportunities</span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse-ring" />
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider font-mono">
+                  {profile.availability}
+                </span>
               </div>
-              <p className="text-xs text-green-600 dark:text-green-500">Open to internships, freelance, and collaborations</p>
-            </div>
-          </div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-1">
+                Seeking opportunities in full-stack web, Laravel/PHP backends, ERP business software, and systems engineering.
+              </p>
+            </SpotlightCard>
+          </Reveal>
 
-          {/* ── Right — form ── */}
-          <div>
-            <div className="card border border-gray-100 dark:border-gray-700">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-5">Send a Message</h3>
+          {/* ── Right Column: Interactive Contact Form (7 cols) ── */}
+          <Reveal delay={200} className="lg:col-span-7">
+            <SpotlightCard className="p-6 sm:p-8">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Send a Message</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+                Fill out the form below or reach out directly at <span className="font-mono text-indigo-500">{profile.email}</span>
+              </p>
 
               {status === 'success' && (
-                <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 mb-5">
-                  <CheckCircle size={18} className="text-green-600 dark:text-green-400 flex-shrink-0" />
-                  <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                    Message sent! I'll get back to you soon.
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 mb-6 animate-fade-up">
+                  <CheckCircle size={18} className="text-emerald-500 flex-shrink-0" />
+                  <p className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                    Message transmitted! Eyuel will respond to your email promptly.
                   </p>
                 </div>
               )}
+
               {status === 'error' && (
-                <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-5">
-                  <AlertCircle size={18} className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-700 dark:text-red-400">{errMsg}</p>
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 mb-6 animate-fade-up">
+                  <AlertCircle size={18} className="text-rose-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-rose-700 dark:text-rose-300">{errMsg}</p>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Name <span className="text-red-500">*</span>
+                    <label htmlFor="name" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Your Name <span className="text-rose-500">*</span>
                     </label>
-                    <input id="name" name="name" type="text" value={form.name} onChange={handleChange}
-                      placeholder="Your full name"
-                      className={`form-input ${errors.name ? 'border-red-400 focus:ring-red-400' : ''}`} />
-                    {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+                    <input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={form.name}
+                      onChange={handleChange}
+                      placeholder="e.g. Alex Morgan"
+                      className={`form-input text-xs ${errors.name ? 'border-rose-400 focus:ring-rose-400' : ''}`}
+                    />
+                    {errors.name && <p className="mt-1 text-[11px] text-rose-500">{errors.name}</p>}
                   </div>
+
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Email <span className="text-red-500">*</span>
+                    <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                      Your Email <span className="text-rose-500">*</span>
                     </label>
-                    <input id="email" name="email" type="email" value={form.email} onChange={handleChange}
-                      placeholder="your@email.com"
-                      className={`form-input ${errors.email ? 'border-red-400 focus:ring-red-400' : ''}`} />
-                    {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      placeholder="alex@company.com"
+                      className={`form-input text-xs ${errors.email ? 'border-rose-400 focus:ring-rose-400' : ''}`}
+                    />
+                    {errors.email && <p className="mt-1 text-[11px] text-rose-500">{errors.email}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
-                  <input id="subject" name="subject" type="text" value={form.subject} onChange={handleChange}
-                    placeholder="What's this about?" className="form-input" />
+                  <label htmlFor="subject" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Subject Line
+                  </label>
+                  <input
+                    id="subject"
+                    name="subject"
+                    type="text"
+                    value={form.subject}
+                    onChange={handleChange}
+                    placeholder="Project Inquiry / Junior Developer Role"
+                    className="form-input text-xs"
+                  />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Message <span className="text-red-500">*</span>
+                  <label htmlFor="message" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                    Message Details <span className="text-rose-500">*</span>
                   </label>
-                  <textarea id="message" name="message" rows={5} value={form.message} onChange={handleChange}
-                    placeholder="Tell me about your project or inquiry..."
-                    className={`form-input resize-none ${errors.message ? 'border-red-400 focus:ring-red-400' : ''}`} />
-                  {errors.message && <p className="mt-1 text-xs text-red-500">{errors.message}</p>}
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={4}
+                    value={form.message}
+                    onChange={handleChange}
+                    placeholder="Describe your inquiry, role requirements, or project scope..."
+                    className={`form-input text-xs resize-none ${errors.message ? 'border-rose-400 focus:ring-rose-400' : ''}`}
+                  />
+                  {errors.message && <p className="mt-1 text-[11px] text-rose-500">{errors.message}</p>}
                 </div>
 
-                <button type="submit" disabled={status === 'loading'}
-                  className="w-full btn-primary justify-center disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0">
-                  {status === 'loading'
-                    ? <><Loader size={16} className="animate-spin" />Sending...</>
-                    : <><Send size={16} />Send Message</>
-                  }
+                <button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className="w-full btn-primary justify-center disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer text-xs sm:text-sm py-3 mt-2"
+                >
+                  {status === 'loading' ? (
+                    <><Loader size={16} className="animate-spin" /> Transmitting...</>
+                  ) : (
+                    <><Send size={15} /> Transmit Message</>
+                  )}
                 </button>
-
-                <p className="text-xs text-center text-gray-400 dark:text-gray-500">
-                  {CONFIGURED
-                    ? <>Sends directly to <span className="text-blue-500">{personalInfo.email}</span></>
-                    : <>Or email directly: <a href={`mailto:${personalInfo.email}`} className="text-blue-500 hover:underline">{personalInfo.email}</a></>
-                  }
-                </p>
               </form>
-            </div>
-          </div>
+            </SpotlightCard>
+          </Reveal>
 
         </div>
       </div>
